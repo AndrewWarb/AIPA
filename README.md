@@ -138,7 +138,7 @@ AI PA: "2!"
 
 - **Frontend**: Next.js 15, React, Tailwind CSS
 - **Backend**: Next.js API Routes
-- **AI/ML**: LangChain, CrewAI, Grok (xAI)
+- **AI/ML**: LangChain, xAI Grok Models, Multi-Agent Architecture
 - **Language**: TypeScript
 
 ## Development
