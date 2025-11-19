@@ -76,7 +76,13 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({
+          message: userMessage,
+          conversationHistory: messages.map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        }),
       });
 
       if (response.ok) {
@@ -164,7 +170,7 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.length === 0 && isInitialized && (
             <div className="text-center text-gray-500 mt-8">
-              <p className="text-lg mb-2">👋 Hello! I'm your AI Personal Assistant</p>
+              <p className="text-lg mb-2">👋 Hello! I&apos;m your AI Personal Assistant</p>
               <p>Start by telling me about your goals or asking for advice on any topic.</p>
             </div>
           )}

@@ -1,5 +1,5 @@
 import { ChatXAI } from '@langchain/xai';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import { HumanMessage, SystemMessage, AIMessage } from '@langchain/core/messages';
 
 export class AIPAAgent {
   private llm: ChatXAI;
@@ -35,19 +35,25 @@ When responding to user queries:
 You have access to a structured directory system for storing and retrieving information, documents, and plans, but in this MVP implementation, you'll work with the information provided in conversations.`;
   }
 
-  async processUserQuery(query: string, userContext?: string): Promise<string> {
+  async processUserQuery(query: string, conversationHistory: Array<{role: string, content: string}> = []): Promise<string> {
     try {
       console.log('AI PA: Processing query:', query);
+      console.log('AI PA: Conversation history length:', conversationHistory.length);
 
+      // Build messages array with conversation history
       const messages = [
         new SystemMessage(this.systemPrompt),
-        new HumanMessage(`User query: "${query}"
-        ${userContext ? `Additional context: ${userContext}` : ''}
-
-        Please provide a helpful, personalized response focused on helping the user achieve their goals.`)
+        ...conversationHistory.map(msg => {
+          if (msg.role === 'user') {
+            return new HumanMessage(msg.content);
+          } else {
+            return new AIMessage(msg.content);
+          }
+        }),
+        new HumanMessage(query)
       ];
 
-      console.log('AI PA: Sending request to Grok API...');
+      console.log('AI PA: Sending request to Grok API with', messages.length, 'messages...');
       const response = await this.llm.invoke(messages);
       console.log('AI PA: Received response from Grok API');
 

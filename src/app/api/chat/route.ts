@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { message } = await request.json();
+    const { message, conversationHistory } = await request.json();
 
     if (!message) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     const aiPAService = getAIPAService();
-    const response = await aiPAService.processUserQuery(message);
+    const response = await aiPAService.processUserQuery(message, conversationHistory || []);
 
     return NextResponse.json({ response });
   } catch (error) {
