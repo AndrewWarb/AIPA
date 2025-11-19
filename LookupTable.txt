@@ -1,0 +1,12 @@
+# AI PA Lookup Table
+# This file lists all stored documents and information sources with their locations
+
+## Directory Structure:
+# information/ - All stored information
+# drafts/ - Draft documents, emails, etc.
+# presentation/ - Charts and presentation materials
+# raw/ - Raw uploads from users before processing
+# plans/ - Fully written out plans created by agents
+
+## Current Contents:
+# (This table will be automatically maintained by the Clerk agent)

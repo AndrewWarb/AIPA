@@ -1,0 +1,6 @@
+# Environment Variables for AI PA
+# Copy this file to .env.local and fill in your actual values
+
+# xAI API Configuration
+# Get your API key from https://x.ai/api
+XAI_API_KEY=your_actual_api_key_here
