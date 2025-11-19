@@ -1,4 +1,4 @@
-# AI PA - a Multi-Agent AI Personal Assistant System
+# AI PA - Multi-Agent AI Personal Assistant System
 
 A work-in-progress AI Personal Assistant system - an intelligent orchestration multi-agent system designed to act as an intelligence-multiplier for users in the pursuit of their goals.
 
