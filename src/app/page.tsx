@@ -4,9 +4,17 @@ import { useState, useRef, useEffect } from 'react';
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'agent';
   content: string;
   timestamp: Date;
+  agentName?: string;
+  agentQuery?: string;
+}
+
+interface AgentConsultation {
+  agent: string;
+  query: string;
+  response: string;
 }
 
 export default function Home() {
@@ -62,6 +70,29 @@ export default function Home() {
     setMessages(prev => [...prev, newMessage]);
   };
 
+  const addAgentConsultation = (agentName: string, query: string, response: string) => {
+    // Add agent query message
+    const queryMessage: Message = {
+      id: `agent-query-${Date.now()}`,
+      role: 'agent',
+      content: `Consulting ${agentName} about: "${query}"`,
+      timestamp: new Date(),
+      agentName,
+      agentQuery: query,
+    };
+
+    // Add agent response message
+    const responseMessage: Message = {
+      id: `agent-response-${Date.now()}`,
+      role: 'agent',
+      content: response,
+      timestamp: new Date(),
+      agentName,
+    };
+
+    setMessages(prev => [...prev, queryMessage, responseMessage]);
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || !isInitialized) return;
 
@@ -87,6 +118,15 @@ export default function Home() {
 
       if (response.ok) {
         const data = await response.json();
+
+        // Add agent consultations to chat if any
+        if (data.agentConsultations && data.agentConsultations.length > 0) {
+          data.agentConsultations.forEach((consultation: AgentConsultation) => {
+            addAgentConsultation(consultation.agent, consultation.query, consultation.response);
+          });
+        }
+
+        // Add AI PA response
         addMessage('assistant', data.response);
       } else {
         const errorData = await response.json();
@@ -121,7 +161,8 @@ export default function Home() {
             <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
               <h3 className="text-sm font-medium text-blue-900 mb-2">Setup Required</h3>
               <p className="text-xs text-blue-700 mb-3">
-                Make sure your <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">XAI_API_KEY</code> is set in <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">.env.local</code>
+                Make sure your <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">XAI_API_KEY</code> is set
+                in <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">.env.local</code>
               </p>
             </div>
             <button
@@ -178,18 +219,35 @@ export default function Home() {
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                message.role === 'user'
+                  ? 'justify-end'
+                  : message.role === 'agent'
+                    ? 'justify-center'
+                    : 'justify-start'
+              }`}
             >
               <div
                 className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                   message.role === 'user'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-white border border-gray-200 text-gray-900'
+                    : message.role === 'agent'
+                      ? 'bg-green-50 border border-green-200 text-green-900'
+                      : 'bg-white border border-gray-200 text-gray-900'
                 }`}
               >
+                {message.role === 'agent' && message.agentName && (
+                  <p className="text-xs font-semibold text-green-700 mb-1">
+                    🤖 {message.agentName}
+                  </p>
+                )}
                 <p className="text-sm">{message.content}</p>
                 <p className={`text-xs mt-1 ${
-                  message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  message.role === 'user'
+                    ? 'text-blue-100'
+                    : message.role === 'agent'
+                      ? 'text-green-600'
+                      : 'text-gray-500'
                 }`}>
                   {message.timestamp.toLocaleTimeString()}
                 </p>
@@ -208,7 +266,7 @@ export default function Home() {
             </div>
           )}
 
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef}/>
         </div>
 
         {/* Input Area */}

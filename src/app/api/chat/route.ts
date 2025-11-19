@@ -20,9 +20,12 @@ export async function POST(request: NextRequest) {
     }
 
     const aiPAService = getAIPAService();
-    const response = await aiPAService.processUserQuery(message, conversationHistory || []);
+    const result = await aiPAService.processUserQuery(message, conversationHistory || []);
 
-    return NextResponse.json({ response });
+    return NextResponse.json({
+      response: result.response,
+      agentConsultations: result.agentConsultations
+    });
   } catch (error) {
     console.error('Error processing chat message:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to process message';
