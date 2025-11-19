@@ -1,6 +1,6 @@
-# AI PA - Personal Assistant MVP
+# AI PA - Multi-Agent AI Personal Assistant System
 
-A minimal viable product of the AI Personal Assistant system - an intelligent orchestration multi-agent system designed to act as an intelligence-multiplier for users in the pursuit of their goals.
+A work-in-progress AI Personal Assistant system - an intelligent orchestration multi-agent system designed to act as an intelligence-multiplier for users in the pursuit of their goals.
 
 ## Features
 
@@ -94,7 +94,7 @@ src/
 
 ## Contributing
 
-This is a minimal MVP implementation. Future enhancements include:
+This is an active work-in-progress. Future enhancements include:
 - Adding all planned specialist agents
 - Implementing the full agent orchestration system
 - Enhanced file management and lookup capabilities
