@@ -100,7 +100,7 @@ AI PA: "2!"
 ## Architecture
 
 ### 🤖 AI Models & Intelligence
-- **Primary LLM**: `grok-4-fast-reasoning` - Advanced reasoning for responses and specialist consultations
+- **Primary LLM**: `grok-4-1-fast-reasoning` - Advanced reasoning for responses and specialist consultations
 - **Classification Engine**: `grok-3-mini` - Cost-effective AI-powered query routing
 - **Intelligent Routing**: Automatic specialist agent selection based on query analysis
 
@@ -172,7 +172,7 @@ src/
 ### **AI & Machine Learning:**
 - **LangChain**: Framework for building multi-agent LLM infrastructure
 - **xAI Grok Models**:
-  - `grok-4-fast-reasoning`: Advanced reasoning for responses & consultations
+  - `grok-4-1-fast-reasoning`: Advanced reasoning for responses & consultations
   - `grok-3-mini`: Cost-effective classification and routing
 - **Multi-Agent Architecture**: Intelligent agent orchestration and communication
 

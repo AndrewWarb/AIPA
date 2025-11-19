@@ -17,7 +17,7 @@ export class AIPAAgent {
     // Initialize main LLM for responses
     this.llm = new ChatXAI({
       apiKey,
-      model: 'grok-4-fast-reasoning',
+      model: 'grok-4-1-fast-reasoning',
       temperature: 1.0, // Creative responses matching typical Grok behavior (0.0=deterministic, 2.0=very random)
     });
 

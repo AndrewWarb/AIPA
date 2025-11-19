@@ -8,7 +8,7 @@ export class HealthWellnessAgent {
   constructor(apiKey: string) {
     this.llm = new ChatXAI({
       apiKey,
-      model: 'grok-4-fast-reasoning',
+      model: 'grok-4-1-fast-reasoning',
       temperature: 0.8, // Slightly creative for personalized advice
     });
 
