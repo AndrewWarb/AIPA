@@ -53,9 +53,10 @@ A work-in-progress AI Personal Assistant system - an intelligent orchestration m
 
 4. **Open [http://localhost:3000](http://localhost:3000) in your browser**
 
-5. **Initialize AI PA:**
-   - Click "Initialize AI PA" in the sidebar
-   - Start chatting!
+5. **Start chatting!**
+   - AI PA initializes automatically on startup
+   - The sidebar will show "✓ AI PA Active" when ready
+   - Start chatting immediately!
 
 ## 💬 Usage
 
@@ -110,6 +111,7 @@ AI PA: "2!"
 - **Health & Wellness Agent**: Expert in nutrition, fitness, mental health, and longevity
 
 #### **Current MVP Components:**
+- **Automatic Initialization**: AI PA starts up automatically on server launch
 - **Dual-Model AI System**: Smart classification + quality responses
 - **Agent Orchestration**: AI PA calls specialists automatically when needed
 - **Inter-Agent Communication**: Specialists provide expert consultations
@@ -194,6 +196,7 @@ src/
 ## Development
 
 ### **✅ Recently Implemented:**
+- **Automatic Initialization**: AI PA starts up automatically on server launch (no manual button needed)
 - **Multi-Agent Architecture**: AI PA orchestrator with Health & Wellness specialist
 - **AI-Powered Classification**: Intelligent query routing using dual-model system
 - **Conversation Memory**: Full chat history for contextual responses

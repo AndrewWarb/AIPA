@@ -22,7 +22,7 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
   // Reference to invisible element at bottom of messages for auto-scrolling
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -35,30 +35,25 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-  const initializeAI = async () => {
-    setIsInitializing(true);
-    try {
-      const response = await fetch('/api/initialize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setIsInitialized(true);
-        addMessage('assistant', 'AI PA initialized successfully! I\'m ready to help you achieve your goals. What would you like to discuss?');
-      } else {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to initialize AI PA');
+  // Check AI PA initialization status on component mount
+  useEffect(() => {
+    const checkInitializationStatus = async () => {
+      try {
+        const response = await fetch('/api/initialize');
+        if (response.ok) {
+          const data = await response.json();
+          setIsInitialized(data.initialized);
+        }
+      } catch (error) {
+        console.error('Failed to check initialization status:', error);
+      } finally {
+        setIsCheckingStatus(false);
       }
-    } catch (error) {
-      console.error('Initialization error:', error);
-      alert(`Failed to initialize AI PA: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsInitializing(false);
-    }
-  };
+    };
+
+    void checkInitializationStatus(); // Explicitly ignore the promise
+  }, []);
+
 
   const addMessage = (role: 'user' | 'assistant', content: string) => {
     const newMessage: Message = {
@@ -130,7 +125,7 @@ export default function Home() {
         addMessage('assistant', data.response);
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to get response');
+        addMessage('assistant', `Sorry, I encountered an error: ${errorData.error || 'Failed to get response'}. Please try again.`);
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -140,7 +135,7 @@ export default function Home() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -156,24 +151,14 @@ export default function Home() {
           <p className="text-sm text-gray-600 mt-1">Personal Assistant</p>
         </div>
 
-        {!isInitialized ? (
+        {isCheckingStatus ? (
           <div className="space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Setup Required</h3>
-              <p className="text-xs text-blue-700 mb-3">
-                Make sure your <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">XAI_API_KEY</code> is set
-                in <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">.env.local</code>
-              </p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+              <h3 className="text-sm font-medium text-yellow-900 mb-2">Initializing AI PA</h3>
+              <p className="text-xs text-yellow-700">Checking server status and loading models...</p>
             </div>
-            <button
-              onClick={initializeAI}
-              disabled={isInitializing}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isInitializing ? 'Initializing...' : 'Initialize AI PA'}
-            </button>
           </div>
-        ) : (
+        ) : isInitialized ? (
           <div className="space-y-4">
             <div className="bg-green-50 border border-green-200 rounded-md p-3">
               <p className="text-sm text-green-800">✓ AI PA Active</p>
@@ -189,6 +174,15 @@ export default function Home() {
               </ul>
             </div>
           </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <h3 className="text-sm font-medium text-red-900 mb-2">AI PA Unavailable</h3>
+              <p className="text-xs text-red-700 mb-3">
+                Please check your <code className="bg-red-100 px-1 py-0.5 rounded text-xs">XAI_API_KEY</code> in <code className="bg-red-100 px-1 py-0.5 rounded text-xs">.env.local</code>
+              </p>
+            </div>
+          </div>
         )}
       </div>
 
@@ -197,19 +191,26 @@ export default function Home() {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            {isInitialized ? 'Chat with AI PA' : 'Welcome to AI PA'}
+            {isCheckingStatus
+              ? 'Starting AI PA'
+              : isInitialized
+              ? 'Chat with AI PA'
+              : 'AI PA Unavailable'
+            }
           </h2>
           <p className="text-sm text-gray-600">
-            {isInitialized
+            {isCheckingStatus
+              ? 'Initializing your personal assistant...'
+              : isInitialized
               ? 'Your intelligent personal assistant for achieving life goals'
-              : 'Please initialize with your xAI API key to get started'
+              : 'Please check your XAI_API_KEY configuration'
             }
           </p>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.length === 0 && isInitialized && (
+          {messages.length === 0 && isInitialized && !isCheckingStatus && (
             <div className="text-center text-gray-500 mt-8">
               <p className="text-lg mb-2">👋 Hello! I&apos;m your AI Personal Assistant</p>
               <p>Start by telling me about your goals or asking for advice on any topic.</p>
@@ -270,14 +271,14 @@ export default function Home() {
         </div>
 
         {/* Input Area */}
-        {isInitialized && (
+        {isInitialized && !isCheckingStatus && (
           <div className="bg-white border-t border-gray-200 p-6">
             <div className="flex space-x-4">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 placeholder="Ask AI PA anything..."
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 disabled={isLoading}

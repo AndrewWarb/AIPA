@@ -1,16 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAIPAService } from '@/lib/ai-pa-service';
+import { NextResponse } from 'next/server';
+import { isAIPAInitialized } from '@/lib/ai-pa-service';
 
-export async function POST(request: NextRequest) {
+export async function GET() {
   try {
-    // Initialize the AI PA service (reads API key from environment variables)
-    getAIPAService();
+    // Check if AI PA is initialized (happens automatically on server start)
+    const isInitialized = isAIPAInitialized();
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      initialized: isInitialized,
+      message: isInitialized ? 'AI PA is ready' : 'AI PA failed to initialize'
+    });
   } catch (error) {
-    console.error('Error initializing AI PA:', error);
+    console.error('Error checking AI PA status:', error);
     return NextResponse.json(
-      { error: 'Failed to initialize AI PA. Please check your XAI_API_KEY environment variable.' },
+      { error: 'Failed to check AI PA status', initialized: false },
       { status: 500 }
     );
   }
